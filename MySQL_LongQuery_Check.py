@@ -8,15 +8,15 @@ from email.MIMEMultipart import MIMEMultipart
 
 def send_email_test(long_query):
 	msg = MIMEMultipart()
-	msg['To'] = email.utils.formataddr(('Recipient', 'luke@shirnia'))
-	msg['From'] = email.utils.formataddr(('LukesLinuxPython', 'root@lukeslinux.co.uk'))
+	msg['To'] = email.utils.formataddr(('Recipient', 'random@email.com'))
+	msg['From'] = email.utils.formataddr(('LukesLinuxPython', 'root@example.com'))
 	msg['Subject'] = 'Long Running Query!'
 	body = long_query
 	msg.attach(MIMEText(body, 'plain'))
 	server = smtplib.SMTP('localhost')
 	text = msg.as_string()
 	#server.set_debuglevel(True) # show communication with the server
-	server.sendmail('root@lukeslinux', ['luke@shirnia.com'], text)
+	server.sendmail('root@email.com', ['random@email.com.com'], text)
 	server.quit()
 
 
