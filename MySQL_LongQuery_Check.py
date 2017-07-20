@@ -1,5 +1,9 @@
+######
+## Author: Luke Shirnia
+# Github: https://github.com/LukeShirnia/MySQLProcessCheck
 
-rt MySQLdb
+import subprocess
+import MySQLdb
 import time
 import smtplib
 import email.utils
@@ -9,18 +13,19 @@ from email.MIMEMultipart import MIMEMultipart
 
 def send_email_test(long_query): # Send an email once a long query has been acknowledged
 	msg = MIMEMultipart()
-	msg['To'] = email.utils.formataddr(('Recipient', 'luke@shirnia'))
-	msg['From'] = email.utils.formataddr(('LukesLinuxPython', 'root@lukeslinux.co.uk'))
+	msg['To'] = email.utils.formataddr(('Recipient', 'to@address.com'))
+	msg['From'] = email.utils.formataddr(('LukesLinuxPython', 'from@address.com'))
 	msg['Subject'] = 'Long Running Query!'
 	body_string = '\n'.join(long_query)
-	print body_string
+#	print body_string # Can be used to debug if queries are being "Captured" by python script
 	body = body_string
 	msg.attach(MIMEText(body, 'plain'))
 	server = smtplib.SMTP('localhost')
 	text = msg.as_string()
 	#server.set_debuglevel(True) # debug mail if required
-	server.sendmail('root@lukeslinux', ['luke@shirnia.com'], text)
+	server.sendmail('from@address.com', ['to@address.com.com'], text)
 	server.quit()
+	subprocess.call(["/usr/bin/logger -s 'MySQLProcessCheck: Email Sent - '`date`"], shell=True) # add a log entry for the restart
 
 
 def mysql_check(): # Connect to mysql and show the process list
@@ -32,7 +37,6 @@ def mysql_check(): # Connect to mysql and show the process list
 	for row in cur.fetchall() :
 		if int(row[5]) > 10 and "Sleep" not in row[4]:
 	        	long_query = "ID: %s  User: %s Host: %s DB: %s State: %s  Query Time: %s State: %s Query: %s"  % ( row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7] )
-			print long_query
 			all_queries.append(long_query)
 	all_queries = filter(None, all_queries)
 	if len(all_queries) > 1:
