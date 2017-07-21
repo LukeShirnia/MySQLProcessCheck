@@ -11,7 +11,10 @@ from email.mime.text import MIMEText
 from email.MIMEMultipart import MIMEMultipart
 
 
-def send_email_test(long_query): # Send an email once a long query has been acknowledged
+def send_email_test(long_query):
+	'''
+	Send an email once a long query has been acknowledged
+	'''
 	msg = MIMEMultipart()
 	msg['To'] = email.utils.formataddr(('Recipient', 'to@address.com'))
 	msg['From'] = email.utils.formataddr(('LukesLinuxPython', 'from@address.com'))
@@ -28,7 +31,10 @@ def send_email_test(long_query): # Send an email once a long query has been ackn
 	subprocess.call(["/usr/bin/logger -s 'MySQLProcessCheck: Email Sent - '`date`"], shell=True) # add a log entry for the restart
 
 
-def mysql_check(): # Connect to mysql and show the process list
+def mysql_check(): 
+	'''
+	Connect to mysql and show the process list
+	'''
 	all_queries = []
 	query_string_headers = ["ID", "User", "Host", "DB", "State", "Query Time", "State", "Query"] 
 	db = MySQLdb.connect(host="", user="", passwd="", db="")
