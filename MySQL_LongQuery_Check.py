@@ -49,7 +49,7 @@ def mysql_check():
 #			print long_query # Used to see if queries are being picked up
 			all_queries.append(long_query)
 	all_queries = filter(None, all_queries)
-	if len(all_queries) > 1:
+	if len(all_queries) >= 1:
 		send_email_test(all_queries)
 	cur.close()
 	db.close ()
