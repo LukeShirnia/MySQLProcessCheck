@@ -36,3 +36,8 @@ Example: Run every 15 mins
 ```
 */15 * * * * /usr/bin/python /path/to/script/MySQLProcessCheck.py
 ```
+<br />
+You can also create a MySQL user just for this script. I would suggest only granting select and process to the user so they can view all mysql processes but have very limited access:
+```
+grant select, process on *.* to pcheck@localhost identified by 'long_random_password';
+```
