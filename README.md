@@ -1,7 +1,7 @@
 # MySQLProcessCheck
 Check MySQL process list with a python script.
 <br />
-This is python script to query MySQL processlist and report on all queries running over a certain defined time in seconds. These queries will then be emailed to a specified address.
+This is python script to query MySQL processlist and report on all queries running over a certain defined time in seconds. These queries will then be emailed to a specified address and written to a file (with time stamps).
 
 <br />
 
@@ -25,7 +25,10 @@ Before running the script you need to find and replace the following throughout 
 * to@address.com ---> Address you wish to email long queries
 * from@address.com ---> Address you are sending emails from
 * int(row[5]) > 10 ---> Change 10 to the value in seconds you wish to use as the "long queries"
+* with open("/home/mysql/long_queries", "a") as file Change "/home/mysql/long_queries" to the file you wish to log to
 * exclude_queries = ['Sleep', 'Binlog Dump'] ---> Add all queries here you wish to exclude
+* db = MySQLdb.connect(host="", user="", passwd="", db="") ---> Update with appropriate information. You are able to leave db empty if you are querying everything. 
+Note: You can also connect to a remote host by specifying the host
 
 <br />
 

@@ -10,6 +10,7 @@ import smtplib
 import email.utils
 from email.mime.text import MIMEText
 from email.MIMEMultipart import MIMEMultipart
+import datetime
 
 
 def send_email_test(long_query):
@@ -32,6 +33,20 @@ def send_email_test(long_query):
 	subprocess.call(["/usr/bin/logger -s 'MySQLProcessCheck: Email Sent - '`date`"], shell=True) # add a log entry for the restart
 
 
+def record_to_file(all_queries):
+        '''
+        Record all long running queries to a file with time stamp
+        '''
+        time_now = datetime.datetime.now()
+        time_now_time = time_now.strftime('%b %d %H:%M')
+        time_now_time = time_now_time + "\n"
+        body_string = '\n'.join(all_queries)
+        body_string = body_string + "\n" + "\n"
+        with open("/home/mysql/long_queries", "a") as file_:
+                file_.write(time_now_time)
+                file_.write(body_string)
+
+
 def mysql_check(): 
 	'''
 	Connect to mysql and show the process list
@@ -51,6 +66,7 @@ def mysql_check():
 	all_queries = filter(None, all_queries)
 	if len(all_queries) >= 1:
 		send_email_test(all_queries)
+		record_to_file(all_queries)
 	cur.close()
 	db.close ()
 
