@@ -25,7 +25,7 @@ Before running the script you need to find and replace the following throughout 
 * to@address.com ---> Address you wish to email long queries
 * from@address.com ---> Address you are sending emails from
 * int(row[5]) > 10 ---> Change 10 to the value in seconds you wish to use as the "long queries"
-* with open("/home/mysql/long_queries", "a") as file Change "/home/mysql/long_queries" to the file you wish to log to
+* with open("/home/mysql/long_queries", "a") as file: ---> Change "/home/mysql/long_queries" to the file you wish to log to
 * exclude_queries = ['Sleep', 'Binlog Dump'] ---> Add all queries here you wish to exclude
 * db = MySQLdb.connect(host="", user="", passwd="", db="") ---> Update with appropriate information. You are able to leave db empty if you are querying everything. 
 Note: You can also connect to a remote host by specifying the host
