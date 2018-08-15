@@ -10,7 +10,7 @@ Python Script ---> Connects to MySQL
 <br />
 Checks "full processlist" query times
 <br />
-IF query time > x, send email
+IF query time > x, send email and log to file
 <br />
 
 
@@ -21,14 +21,35 @@ IF query time > x, send email
 <br />
 
 ### Prerequisites
-Before running the script you need to find and replace the following throughout the script:
-* to@address.com ---> Address you wish to email long queries
-* from@address.com ---> Address you are sending emails from
-* int(row[5]) > 10 ---> Change 10 to the value in seconds you wish to use as the "long queries"
-* with open("/home/mysql/long_queries", "a") as file: ---> Change "/home/mysql/long_queries" to the file you wish to log to
-* exclude_queries = ['Sleep', 'Binlog Dump'] ---> Add all queries here you wish to exclude
-* db = MySQLdb.connect(host="", user="", passwd="", db="") ---> Update with appropriate information. You are able to leave db empty if you are querying everything. 
-Note: You can also connect to a remote host by specifying the host
+Before running the script you need to find and replace the following at the top of the script:
+
+```
+settings = {
+    "Settings": {
+        "QueryTime": 10  # In seconds
+    },
+    "MySQL": {
+        "host": "127.0.0.1",  # MySQL bind address
+        "port": 3306,         # MySQL port
+        "user": "root",       # MySQL user
+        "password": "",       # MySQL password
+        "db": ""              # Leave blank to check all databases
+    },
+    "Email": {
+        "Recipient": "",      # Where to send email
+        "From": "",           # From email address
+        "Subject": ""         # Subject
+    },
+    "Logging": {
+        "LogFile": "/home/mysql/longqueries"  # Location to log queries
+    },
+    "Queries": [             # Exclude the following queries
+        "Sleep",
+        "Binlog Dump"
+    ]
+}
+```
+
 
 <br />
 
