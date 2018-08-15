@@ -16,7 +16,7 @@ IF query time > x, send email and log to file
 
 ### Requirements
 * Postfix configured to send mail locally
-* Requires: mysql-python package
+* Requires: pyMYSQL
 
 <br />
 
