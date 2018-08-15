@@ -1,16 +1,16 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ######
 # Author: Luke Shirnia
 # Github: https://github.com/LukeShirnia/MySQLProcessCheck
 
-
+import __future__
 import subprocess
 import pymysql as db
 import time
 import smtplib
 import email.utils
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.MIMEMultipart import MIMEMultipart
 import datetime
 
 # Change the settings below as required:
@@ -19,9 +19,9 @@ settings = {
         "QueryTime": 10  # In seconds
     },
     "MySQL": {
-        "host": "",
+        "host": "127.0.0.1",
         "port": 3306,
-        "user": "",
+        "user": "root",
         "password": "",
         "db": ""
     },
@@ -32,7 +32,11 @@ settings = {
     },
     "Logging": {
         "LogFile": "/home/mysql/longqueries"
-    }
+    },
+    "Queries": [  # Exclude the following queries
+        "Sleep",
+        "Binlog Dump"
+    ]
 }
 
 
@@ -80,13 +84,12 @@ def record_to_file(all_queries):
 
 class mysql_check():
     '''
-    Connect to mysql and show the process list
+    Connect to mysql and check the process list
     '''
     def __init__(self):
         self.all_queries = []
-        # Exclude sleeping connected
-        self.exclude_queries = ['Sleep', 'Binlog Dump']
-        # Fill in the following informaiton:
+
+        self.exclude_queries = settings["Queries"]
         self.HOST = settings["MySQL"]["host"]
         self.PORT = settings["MySQL"]["port"]
         self.USER = settings["MySQL"]["user"]
@@ -106,23 +109,40 @@ class mysql_check():
     def querycheck(self):
         self.cur.execute("show full processlist;")
         for row in self.cur.fetchall():
-            if int(row[5]) > self.qt and row[4] not in self.exclude_queries:
-                long_query = \
-                    "ID: %s  User: %s Host: %s DB: %s State: %s \
-                    Query Time: %s State: %s Query: %s" % (
-                        row[0], row[1], row[2], row[3],
-                        row[4], row[5], row[6], row[7])
-                self.all_queries.append(long_query)
+            try:
+                if int(row[5]) > int(self.qt) and \
+                        row[4] not in self.exclude_queries:
+                    long_query = \
+                        "ID: %s  User: %s Host: %s DB: %s State: %s \
+                        Query Time: %s State: %s Query: %s" % (
+                            row[0], row[1], row[2], row[3],
+                            row[4], row[5], row[6], row[7])
+                    self.all_queries.append(long_query)
+            except TypeError:
+                pass
         all_queries = filter(None, self.all_queries)
         if len(all_queries) >= 1:
-            send_email_test(all_queries)
-            record_to_file(all_queries)
+            try:
+                send_email_test(all_queries)
+            except:
+                import sys
+                print("Issue with email, please check")
+                sys.exit(1)
+            try:
+                record_to_file(all_queries)
+            except IOError:
+                import sys
+                print("Error")
+                print("Does log file exist? '{0}'".format(
+                                settings["Logging"]["LogFile"]))
+                sys.exit(1)
         self.cur.close()
         self.db.close()
 
 
-try:
-    mysql = mysql_check()
-    mysql.querycheck()
-except Exception as error:
-    print error
+if __name__ == '__main__':
+    try:
+        mysql = mysql_check()
+        mysql.querycheck()
+    except Exception as error:
+        print(error)
